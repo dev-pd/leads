@@ -29,6 +29,21 @@ function Card({
   );
 }
 
+/** Sparkles mark — signals AI-generated content to the attorney. */
+function AiSparkles({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M12 2.5l1.6 4.3a4 4 0 002.4 2.4l4.3 1.6-4.3 1.6a4 4 0 00-2.4 2.4L12 19.1l-1.6-4.3a4 4 0 00-2.4-2.4L3.7 10.8l4.3-1.6a4 4 0 002.4-2.4L12 2.5z" />
+      <path d="M19 14.5l.7 1.9a2 2 0 001.2 1.2l1.9.7-1.9.7a2 2 0 00-1.2 1.2l-.7 1.9-.7-1.9a2 2 0 00-1.2-1.2l-1.9-.7 1.9-.7a2 2 0 001.2-1.2l.7-1.9z" />
+    </svg>
+  );
+}
+
 function Bullets({ items, color }: { items: string[]; color: string }) {
   return (
     <ul className="space-y-1.5 text-sm text-stone-700">
@@ -99,8 +114,20 @@ export function LeadDetail({ lead }: { lead: Lead }) {
         <div className="flex flex-col gap-6 lg:col-span-2">
           {/* AI fit assessment */}
           {lead.profile_score !== null && (
-            <Card title="AI O-1 candidacy assessment">
-              <p className="-mt-2 mb-4 text-xs text-stone-500">
+            <Card>
+              <div className="mb-1 flex items-center gap-2">
+                <span className="flex h-6 w-6 items-center justify-center rounded-md bg-indigo-100 text-indigo-600">
+                  <AiSparkles className="h-3.5 w-3.5" />
+                </span>
+                <h2 className="text-sm font-semibold text-stone-900">
+                  O-1 candidacy assessment
+                </h2>
+                <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-indigo-600">
+                  <AiSparkles className="h-2.5 w-2.5" />
+                  AI generated
+                </span>
+              </div>
+              <p className="mb-4 text-xs text-stone-500">
                 Scored against the O-1 extraordinary-ability criteria.
               </p>
               {lead.resume_summary && (
