@@ -120,6 +120,10 @@ def assess_resume(
         message = client.messages.create(
             model=settings.claude_model,
             max_tokens=1024,
+            # Disable thinking: this is a structured-extraction task, not
+            # reasoning. On models that default thinking on (e.g. Sonnet 5) it
+            # otherwise adds latency and can consume max_tokens before the JSON.
+            thinking={"type": "disabled"},
             messages=[
                 {
                     "role": "user",
