@@ -47,7 +47,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/40 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-stone-900/40 p-4"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -60,7 +60,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
         <div className="mb-4 flex items-start justify-between">
           <div>
             <h2 id="login-title" className="text-lg font-semibold text-stone-900">
-              Attorney sign in
+              Sign in
             </h2>
             <p className="mt-1 text-sm text-stone-500">
               Access the internal leads dashboard.
@@ -74,6 +74,10 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
           >
             ✕
           </button>
+        </div>
+
+        <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+          Only attorneys can sign in for now. Prospect accounts are coming soon.
         </div>
 
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
@@ -95,8 +99,7 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
               type="email"
               autoComplete="email"
               required
-              autoFocus
-              className="rounded-md border border-stone-300 px-3 py-2 text-sm outline-none focus:border-stone-400 focus:ring-2 focus:ring-stone-100"
+              className="rounded-lg border border-stone-300 px-3 py-2 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
             />
           </div>
           <div className="flex flex-col gap-1.5">
@@ -112,13 +115,13 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
               type="password"
               autoComplete="current-password"
               required
-              className="rounded-md border border-stone-300 px-3 py-2 text-sm outline-none focus:border-stone-400 focus:ring-2 focus:ring-stone-100"
+              className="rounded-lg border border-stone-300 px-3 py-2 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
             />
           </div>
           <button
             type="submit"
             disabled={pending}
-            className="mt-1 inline-flex items-center justify-center gap-2 rounded-md bg-stone-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-stone-800 disabled:opacity-60"
+            className="mt-1 inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:opacity-60"
           >
             {pending && <Spinner />}
             {pending ? "Signing in…" : "Sign in"}
