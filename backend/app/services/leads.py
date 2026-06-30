@@ -6,7 +6,7 @@ orchestration) live here.
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.core.errors import bad_request, not_found
+from app.core.errors import bad_request, conflict, not_found
 from app.core.logging_config import get_logger
 from app.models.lead import Lead, LeadState
 from app.storage import StorageBackend, StoredObject
@@ -31,7 +31,18 @@ def create_lead(
     resume_filename: str,
     resume_content_type: str,
 ) -> Lead:
-    """Persist a lead and its resume atomically (DB row first, then file)."""
+    """Persist a lead and its resume atomically (DB row first, then file).
+
+    Prospect email is unique — a second submission with the same email is
+    rejected rather than creating a duplicate lead.
+    """
+    existing = db.scalar(select(Lead).where(Lead.email == email))
+    if existing is not None:
+        raise conflict(
+            "DUPLICATE_LEAD",
+            "A lead with this email already exists",
+        )
+
     lead = Lead(
         first_name=first_name,
         last_name=last_name,

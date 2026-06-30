@@ -26,7 +26,9 @@ class Lead(Base):
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
     first_name: Mapped[str] = mapped_column(String(120), nullable=False)
     last_name: Mapped[str] = mapped_column(String(120), nullable=False)
-    email: Mapped[str] = mapped_column(String(320), nullable=False, index=True)
+    email: Mapped[str] = mapped_column(
+        String(320), nullable=False, unique=True, index=True
+    )
 
     # Storage key (not the bytes). Resolved by the active storage backend.
     resume_key: Mapped[str] = mapped_column(String(512), nullable=False)

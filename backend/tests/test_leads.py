@@ -53,6 +53,14 @@ def test_submit_rejects_bad_email(client, pdf_bytes):
     assert res.status_code == 422
 
 
+def test_submit_rejects_duplicate_email(client, pdf_bytes):
+    first = _submit(client, pdf_bytes, email="dupe@example.com")
+    assert first.status_code == 201
+    second = _submit(client, pdf_bytes, email="dupe@example.com")
+    assert second.status_code == 409
+    assert second.json()["error"]["code"] == "DUPLICATE_LEAD"
+
+
 def test_list_requires_auth(client, pdf_bytes):
     _submit(client, pdf_bytes)
     assert client.get("/api/leads").status_code == 401
