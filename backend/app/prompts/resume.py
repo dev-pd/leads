@@ -7,9 +7,11 @@ expected JSON output changes.
 v2 — reframed for the firm's actual matter: assessing a prospect's strength as
 an O-1 (extraordinary-ability) visa candidate, scored against O-1 / EB-1A
 evidentiary criteria rather than generic employability.
+v3 — output is now delivered via a forced ``record_assessment`` tool call
+instead of free-form JSON, so malformed model text can no longer break parsing.
 """
 
-RESUME_PROMPT_VERSION = "v2"
+RESUME_PROMPT_VERSION = "v3"
 
 # The firm is an immigration practice; prospects are evaluated as O-1
 # (extraordinary ability) candidates. The score reflects the strength of an O-1
@@ -32,17 +34,10 @@ criteria):
 A resume with little verifiable evidence of extraordinary ability scores low. \
 Map the total to a rating: strong (>=70), moderate (40-69), weak (<40).
 
-Return ONLY a JSON object (no markdown, no text outside the JSON) with exactly \
-these keys:
-  "summary": 2-3 plain-text sentences on the prospect and their O-1 case strength.
-  "score": the integer 0-100 rubric total.
-  "rating": one of "strong", "moderate", "weak" (consistent with score).
-  "rationale": one sentence explaining the score against the O-1 criteria.
-  "strengths": array of up to 4 short strings — evidence that supports an O-1 case.
-  "concerns": array of up to 3 short strings — gaps or missing O-1 evidence (use [] if none).
-  "most_recent_role": the latest job title and organization, or "Not specified".
-  "years_experience": approximate total years as an integer, or null if unclear.
-  "education": array of short "Degree, Institution" strings (use [] if none).
-  "skills": array of up to 8 key skills or areas of expertise (use [] if none).
-Use only information present in the document. Do not invent details.\
+Record your assessment by calling the record_assessment tool. Provide a 2-3 \
+sentence profile (summary), the 0-100 score, the matching rating, a one-sentence \
+rationale, up to 4 strengths (evidence supporting an O-1 case), up to 3 concerns \
+(gaps or missing O-1 evidence), the most recent role, approximate years of \
+experience, education, and key skills. Use only information present in the \
+document — do not invent details.\
 """

@@ -9,15 +9,14 @@ If text extraction yields almost nothing (e.g. a scanned image with no text
 layer) we fall back to sending the PDF itself as a base64 ``document`` block,
 which Claude reads via vision.
 
-Backward compatibility: the request uses only ``model`` / ``max_tokens`` /
-``messages`` (no model-specific params like thinking or sampling), so it works
-across every Claude model. The response is parsed defensively, so prompt or
-model changes never break the flow.
+Robust output: instead of parsing free-form text (which breaks when a string
+value contains an unescaped quote), we force a single tool call. The API
+guarantees the tool input is valid JSON matching the schema, so parsing can
+never fail on malformed model output.
 """
 import base64
 import io
 import json
-import re
 from dataclasses import dataclass
 
 import anthropic
@@ -34,6 +33,57 @@ _log = get_logger("app.resume_ai")
 _RATINGS = {"strong", "moderate", "weak"}
 # Below this many characters we treat extraction as failed (likely a scan).
 _MIN_TEXT_CHARS = 40
+
+# Forcing this tool makes Claude return the assessment as structured tool input.
+# The API validates it against the schema, so we get guaranteed-valid JSON
+# (no brittle text parsing that breaks on an unescaped quote in a string value).
+_ASSESSMENT_TOOL = {
+    "name": "record_assessment",
+    "description": "Record the structured O-1 candidacy assessment of the prospect.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "summary": {
+                "type": "string",
+                "description": "2-3 sentence plain-text profile and O-1 case strength.",
+            },
+            "score": {"type": "integer", "description": "0-100 rubric total."},
+            "rating": {"type": "string", "enum": ["strong", "moderate", "weak"]},
+            "rationale": {
+                "type": "string",
+                "description": "One sentence explaining the score vs the O-1 criteria.",
+            },
+            "strengths": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "Up to 4 short strings — evidence supporting an O-1 case.",
+            },
+            "concerns": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "Up to 3 short strings — gaps or missing O-1 evidence.",
+            },
+            "most_recent_role": {"type": "string"},
+            "years_experience": {
+                "type": ["integer", "null"],
+                "description": "Approximate total years, or null if unclear.",
+            },
+            "education": {"type": "array", "items": {"type": "string"}},
+            "skills": {"type": "array", "items": {"type": "string"}},
+        },
+        "required": [
+            "summary",
+            "score",
+            "rating",
+            "rationale",
+            "strengths",
+            "concerns",
+            "most_recent_role",
+            "education",
+            "skills",
+        ],
+    },
+}
 
 
 def extract_text(pdf_bytes: bytes) -> str:
@@ -122,8 +172,10 @@ def assess_resume(
             max_tokens=1024,
             # Disable thinking: this is a structured-extraction task, not
             # reasoning. On models that default thinking on (e.g. Sonnet 5) it
-            # otherwise adds latency and can consume max_tokens before the JSON.
+            # adds latency, and forced tool use requires thinking off.
             thinking={"type": "disabled"},
+            tools=[_ASSESSMENT_TOOL],
+            tool_choice={"type": "tool", "name": "record_assessment"},
             messages=[
                 {
                     "role": "user",
@@ -134,13 +186,13 @@ def assess_resume(
                 }
             ],
         )
-        text = "".join(b.text for b in message.content if b.type == "text")
-        # Defensive: pull the first {...} block in case the model adds prose.
-        match = re.search(r"\{.*\}", text, re.DOTALL)
-        if not match:
-            _log.warning("resume_assessment_no_json")
+        tool_use = next(
+            (b for b in message.content if b.type == "tool_use"), None
+        )
+        if tool_use is None:
+            _log.warning("resume_assessment_no_tool_use")
             return None
-        assessment = _coerce(json.loads(match.group(0)))
+        assessment = _coerce(tool_use.input)
         _log.info(
             "resume_assessment_generated",
             extra={"score": assessment.score, "rating": assessment.rating},
