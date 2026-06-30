@@ -10,6 +10,7 @@ Attorney-only (Bearer JWT):
   GET    /api/leads/{id}/resume     stream the stored resume
 """
 from fastapi import APIRouter, BackgroundTasks, File, Form, Response, UploadFile
+from pydantic import EmailStr
 
 from app.api.deps import CurrentAttorney, DbSession, Storage
 from app.config import settings
@@ -43,7 +44,7 @@ async def create_lead(
     background: BackgroundTasks,
     first_name: str = Form(..., min_length=1, max_length=120),
     last_name: str = Form(..., min_length=1, max_length=120),
-    email: str = Form(...),
+    email: EmailStr = Form(...),
     resume: UploadFile = File(...),
 ) -> LeadOut:
     """Public endpoint — no auth. Stores the lead, then emails async."""
