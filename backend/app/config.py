@@ -49,8 +49,8 @@ class Settings(BaseSettings):
     # S3 / MinIO (used only when storage_backend == "s3")
     s3_endpoint_url: str = "http://localhost:9000"
     s3_bucket: str = "resumes"
-    s3_access_key: str = "minioadmin"
-    s3_secret_key: str = "minioadmin"
+    s3_access_key: str = ""  # required (from env) when storage_backend == "s3"
+    s3_secret_key: str = ""  # required (from env) when storage_backend == "s3"
     s3_region: str = "us-east-1"
 
     # --- Upload constraints ---
