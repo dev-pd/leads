@@ -1,4 +1,4 @@
-import { type Lead } from "@/lib/api";
+import { type LeadStats } from "@/lib/leads";
 
 interface Stat {
   label: string;
@@ -6,19 +6,16 @@ interface Stat {
   accent: string;
 }
 
-export function DashboardStats({ leads }: { leads: Lead[] }) {
-  const pending = leads.filter((l) => l.state === "PENDING").length;
-  const reachedOut = leads.filter((l) => l.state === "REACHED_OUT").length;
-
-  const stats: Stat[] = [
-    { label: "Total leads", value: leads.length, accent: "text-stone-900" },
-    { label: "Pending", value: pending, accent: "text-amber-600" },
-    { label: "Reached out", value: reachedOut, accent: "text-green-600" },
+export function DashboardStats({ stats }: { stats: LeadStats }) {
+  const cards: Stat[] = [
+    { label: "Total leads", value: stats.total, accent: "text-stone-900" },
+    { label: "Pending", value: stats.pending, accent: "text-amber-600" },
+    { label: "Reached out", value: stats.reached_out, accent: "text-green-600" },
   ];
 
   return (
     <div className="grid grid-cols-3 gap-4">
-      {stats.map((s) => (
+      {cards.map((s) => (
         <div
           key={s.label}
           className="rounded-xl border border-stone-200 bg-white px-5 py-4 shadow-sm"

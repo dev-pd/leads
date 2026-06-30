@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { type Lead } from "@/lib/api";
 import { LeadStateBadge } from "@/components/lead-state-badge";
+import { ProfileScoreBadge } from "@/components/profile-score-badge";
 import { formatRelative, initials } from "@/lib/format";
 
 export function LeadsTable({ leads }: { leads: Lead[] }) {
@@ -11,6 +12,7 @@ export function LeadsTable({ leads }: { leads: Lead[] }) {
         <thead>
           <tr className="border-b border-stone-200 bg-stone-50/60 text-xs font-medium uppercase tracking-wide text-stone-500">
             <th className="px-5 py-3 font-medium">Prospect</th>
+            <th className="px-5 py-3 font-medium">Fit score</th>
             <th className="px-5 py-3 font-medium">Status</th>
             <th className="px-5 py-3 font-medium">Submitted</th>
             <th className="px-5 py-3" />
@@ -30,13 +32,21 @@ export function LeadsTable({ leads }: { leads: Lead[] }) {
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700">
                     {initials(lead.first_name, lead.last_name)}
                   </span>
-                  <span className="flex flex-col">
+                  <span className="flex min-w-0 flex-col">
                     <span className="font-medium text-stone-900">
                       {lead.first_name} {lead.last_name}
                     </span>
-                    <span className="text-xs text-stone-500">{lead.email}</span>
+                    <span className="truncate text-xs text-stone-500">
+                      {lead.email}
+                    </span>
                   </span>
                 </Link>
+              </td>
+              <td className="px-5 py-3">
+                <ProfileScoreBadge
+                  score={lead.profile_score}
+                  rating={lead.profile_rating}
+                />
               </td>
               <td className="px-5 py-3">
                 <LeadStateBadge state={lead.state} />

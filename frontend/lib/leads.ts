@@ -4,7 +4,13 @@
  */
 import { redirect } from "next/navigation";
 
-import { ApiError, apiFetch, type Lead, type LeadList } from "@/lib/api";
+import {
+  ApiError,
+  apiFetch,
+  type Lead,
+  type LeadList,
+  type ProfileRating,
+} from "@/lib/api";
 import { getToken } from "@/lib/session";
 
 async function authed<T>(path: string, init: RequestInit = {}): Promise<T> {
@@ -18,8 +24,34 @@ async function authed<T>(path: string, init: RequestInit = {}): Promise<T> {
   }
 }
 
-export function fetchLeads(): Promise<LeadList> {
-  return authed<LeadList>("/leads");
+export function fetchLeads({
+  limit = 24,
+  offset = 0,
+  rating,
+  sort = "recent",
+}: {
+  limit?: number;
+  offset?: number;
+  rating?: ProfileRating;
+  sort?: "recent" | "score";
+} = {}): Promise<LeadList> {
+  const params = new URLSearchParams({
+    limit: String(limit),
+    offset: String(offset),
+    sort,
+  });
+  if (rating) params.set("rating", rating);
+  return authed<LeadList>(`/leads?${params.toString()}`);
+}
+
+export interface LeadStats {
+  total: number;
+  pending: number;
+  reached_out: number;
+}
+
+export function fetchLeadStats(): Promise<LeadStats> {
+  return authed<LeadStats>("/leads/stats");
 }
 
 export function fetchLead(id: string): Promise<Lead> {

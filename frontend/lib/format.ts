@@ -1,22 +1,29 @@
+// The firm operates in Pacific Time — render all timestamps in PT regardless of
+// where the dashboard is viewed. (Stored as UTC in the DB.)
+const TZ = "America/Los_Angeles";
+
 export function initials(first: string, last: string): string {
   return `${first[0] ?? ""}${last[0] ?? ""}`.toUpperCase();
 }
 
 export function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString(undefined, {
+  return new Date(iso).toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
     day: "numeric",
+    timeZone: TZ,
   });
 }
 
 export function formatDateTime(iso: string): string {
-  return new Date(iso).toLocaleString(undefined, {
+  return new Date(iso).toLocaleString("en-US", {
     year: "numeric",
     month: "short",
     day: "numeric",
     hour: "numeric",
     minute: "2-digit",
+    timeZone: TZ,
+    timeZoneName: "short",
   });
 }
 

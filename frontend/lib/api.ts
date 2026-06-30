@@ -10,6 +10,18 @@
 
 export type LeadState = "PENDING" | "REACHED_OUT";
 
+export type ProfileRating = "strong" | "moderate" | "weak";
+
+export interface ProfileAssessment {
+  rationale: string;
+  strengths: string[];
+  concerns: string[];
+  most_recent_role: string;
+  years_experience: number | null;
+  education: string[];
+  skills: string[];
+}
+
 /** Mirrors the backend LeadState enum (OpenAPI schema is the source of truth). */
 export const LEAD_STATES: LeadState[] = ["PENDING", "REACHED_OUT"];
 
@@ -26,6 +38,11 @@ export interface Lead {
   resume_filename: string;
   resume_content_type: string;
   state: LeadState;
+  reached_out_at: string | null;
+  resume_summary: string | null;
+  profile_score: number | null;
+  profile_rating: ProfileRating | null;
+  profile_assessment: ProfileAssessment | null;
   created_at: string;
   updated_at: string;
 }
