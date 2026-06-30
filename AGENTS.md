@@ -1,20 +1,26 @@
 # Leads — project & agent guide
 
-Publicly-fillable lead intake + auth-guarded internal dashboard.
-Prospect submits **first/last name, email, resume PDF** → app emails prospect +
-attorney → attorney reviews leads, flips state **PENDING → REACHED_OUT**.
+Publicly-fillable lead intake + auth-guarded internal dashboard for an
+**immigration firm**. Prospect submits **first/last name, email, resume PDF** →
+app emails prospect + attorney **and scores the prospect as an O-1
+(extraordinary-ability) visa candidate in the background** → attorney reviews
+AI-triaged leads, flips state **PENDING → REACHED_OUT**.
 
 ## Stack
 - **backend/** — FastAPI, SQLAlchemy 2, Alembic, Postgres. JWT auth, Resend email,
-  pluggable storage (local disk / MinIO-S3). See `backend/AGENTS.md`.
+  pluggable storage (local disk / MinIO-S3), async **Anthropic résumé scoring**
+  (O-1 rubric). See `backend/AGENTS.md`.
 - **frontend/** — Next.js (App Router, TS), Tailwind, react-hook-form + zod.
   See `frontend/AGENTS.md`.
 - **nginx/** — reverse proxy: `/api` → backend, `/` → frontend (single origin).
 - Orchestrated by root `docker-compose.yml` (db, minio, backend, frontend, nginx).
 
 ## Run
-`cp backend/.env.example backend/.env` (set `RESEND_API_KEY`, attorney emails) →
-`docker compose up --build` → app at http://localhost.
+`cp backend/.env.example backend/.env` → set the **required** vars (`JWT_SECRET`,
+`ATTORNEY_EMAIL`, `ATTORNEY_PASSWORD`, `ATTORNEY_NAME` — no defaults, app fails
+fast if missing). Optional: `RESEND_API_KEY` (real email) and `ANTHROPIC_API_KEY`
+(résumé scoring); empty = that feature is skipped. Then `make up` (or
+`docker compose up --build`) → app at http://localhost.
 
 ## Rules
 - **Scoped commits.** One logical change per commit, conventional style
@@ -26,6 +32,9 @@ attorney → attorney reviews leads, flips state **PENDING → REACHED_OUT**.
 - Public route: `POST /api/leads` only. Everything else needs the attorney JWT.
 - State machine is one-way `PENDING → REACHED_OUT`, enforced in
   `backend/app/services/leads.py`.
+- AI scoring is **advisory and non-blocking** — it runs in a background task
+  after submission and never gates the response. The prospect's submission must
+  succeed even if scoring is disabled or fails.
 
 ## Verify before done
 - Backend: `docker compose up backend` boots, migrations apply, `/health` 200.
