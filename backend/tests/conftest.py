@@ -3,6 +3,15 @@
 Tests never touch Postgres, MinIO, or Resend — the corresponding dependencies
 are overridden so the suite is fast, hermetic, and safe to run offline.
 """
+import os
+
+# Required settings have no defaults in production code; provide test values
+# before importing the app (which instantiates Settings at import time).
+os.environ.setdefault("JWT_SECRET", "test-secret")
+os.environ.setdefault("ATTORNEY_EMAIL", "attorney@example.com")
+os.environ.setdefault("ATTORNEY_PASSWORD", "secret123")
+os.environ.setdefault("ATTORNEY_NAME", "Test Attorney")
+
 import tempfile
 from pathlib import Path
 

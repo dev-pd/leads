@@ -46,6 +46,10 @@ target-version = "py312"
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
 
+[tool.ruff.lint.per-file-ignores]
+# conftest sets required env vars before importing the app, so imports follow.
+"tests/conftest.py" = ["E402"]
+
 # FastAPI uses callables (Form/File/Depends/...) as argument defaults by design;
 # they are not the mutable defaults B008 is meant to catch.
 [tool.ruff.lint.flake8-bugbear]

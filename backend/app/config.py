@@ -23,19 +23,20 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg://leads:leads@localhost:5432/leads"
 
     # --- Auth (JWT) ---
-    jwt_secret: str = "dev-insecure-change-me"
+    # Required — no insecure default; must be provided via env (see .env.example).
+    jwt_secret: str
     jwt_algorithm: str = "HS256"
     jwt_expires_minutes: int = 60 * 24  # 24h
 
-    # Seed attorney account (created by scripts/seed.py).
-    attorney_email: str = "attorney@example.com"
-    attorney_password: str = "changeme123"
-    attorney_name: str = "Default Attorney"
+    # Seed attorney account — required, provided via env (no hardcoded credentials).
+    attorney_email: str
+    attorney_password: str
+    attorney_name: str
 
-    # --- Email (Resend) ---
+    # --- Email (Resend) — optional; empty values disable sending ---
     resend_api_key: str = ""  # empty -> send is skipped, payload logged only
-    email_from: str = "onboarding@resend.dev"
-    notify_attorney_email: str = "attorney@example.com"
+    email_from: str = ""
+    notify_attorney_email: str = ""
 
     # --- AI resume summary (Anthropic API) ---
     anthropic_api_key: str = ""  # empty -> summary generation is skipped
