@@ -117,16 +117,19 @@ Design decisions:
   nothing (a scanned image), we **fall back** to sending the PDF itself, which
   Claude reads via vision.
 - **Explicit, versioned rubric.** Scoring is not a vibe: an explicit weighted
-  rubric (experience 35 / education 20 / skills 20 / track record 15 / clarity
-  10) lives in `app/prompts/resume.py` with a `RESUME_PROMPT_VERSION`, so scores
-  are principled and the prompt can evolve traceably.
+  rubric tied to the firm's matter — the O-1 / EB-1A extraordinary-ability
+  criteria (awards 20 / original contributions 20 / critical role 15 / press 15 /
+  scholarly work 10 / memberships 10 / remuneration 10) — lives in
+  `app/prompts/resume.py` with a `RESUME_PROMPT_VERSION`, so scores are principled
+  and the prompt can evolve traceably.
 - **Async, never blocking.** Runs in a FastAPI `BackgroundTask`; the prospect
   never waits. The attorney UI shows an "Analyzing…" state and auto-refreshes
   until the score lands.
-- **Backward-compatible call.** Only `model` / `max_tokens` / `messages` (no
-  model-specific params), and **defensive JSON parsing** with rubric clamping —
-  so a prompt or model change never crashes the flow. Model is env-configurable
-  (Sonnet by default for cost).
+- **Structured output via forced tool call.** The assessment comes back as the
+  input to a forced `record_assessment` tool, so the API validates it against a
+  schema and we read guaranteed-valid JSON — no hand-parsing of model text that
+  can break on an unescaped quote. Scores are clamped and the rating re-derived
+  defensively. Model is env-configurable (Sonnet by default for cost).
 - **Triage UX.** The score/rating is shown per lead and the dashboard can filter
   by strong/moderate/weak so the attorney focuses on the prospects worth
   pursuing.
