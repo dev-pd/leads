@@ -35,47 +35,37 @@ export function StatusControl({ leadId, state }: StatusControlProps) {
 
   if (terminal) {
     return (
-      <div className="flex flex-col gap-2">
-        <span className="text-sm font-medium text-stone-700">Status</span>
-        <p className="text-sm text-stone-500">
-          This lead has been reached out to — its status is final.
-        </p>
+      <div className="rounded-lg border border-green-200 bg-green-50 px-3 py-3 text-sm text-green-700">
+        ✓ This lead has been reached out to — status is final.
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <label
-        htmlFor="lead-status"
-        className="text-sm font-medium text-stone-700"
+    <div className="flex flex-col gap-3">
+      <select
+        id="lead-status"
+        aria-label="Lead status"
+        value={selected}
+        disabled={pending}
+        onChange={(e) => setSelected(e.target.value as LeadState)}
+        className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 shadow-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 disabled:opacity-60"
       >
-        Status
-      </label>
-      <div className="flex items-center gap-3">
-        <select
-          id="lead-status"
-          value={selected}
-          disabled={pending}
-          onChange={(e) => setSelected(e.target.value as LeadState)}
-          className="rounded-md border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 shadow-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 disabled:opacity-60"
-        >
-          {LEAD_STATES.map((s) => (
-            <option key={s} value={s}>
-              {LEAD_STATE_LABELS[s]}
-            </option>
-          ))}
-        </select>
-        <button
-          type="button"
-          onClick={onUpdate}
-          disabled={pending || selected === state}
-          className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {pending && <Spinner />}
-          {pending ? "Updating…" : "Update status"}
-        </button>
-      </div>
+        {LEAD_STATES.map((s) => (
+          <option key={s} value={s}>
+            {LEAD_STATE_LABELS[s]}
+          </option>
+        ))}
+      </select>
+      <button
+        type="button"
+        onClick={onUpdate}
+        disabled={pending || selected === state}
+        className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {pending && <Spinner />}
+        {pending ? "Updating…" : "Update status"}
+      </button>
     </div>
   );
 }
