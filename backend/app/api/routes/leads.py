@@ -68,7 +68,6 @@ async def create_lead(
         first_name=lead.first_name,
         last_name=lead.last_name,
         email=lead.email,
-        lead_id=lead.id,
     )
     return LeadOut.model_validate(lead)
 

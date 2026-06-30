@@ -65,7 +65,7 @@ def send_prospect_confirmation(
 
 
 def send_attorney_notification(
-    *, first_name: str, last_name: str, prospect_email: str, lead_id: str
+    *, first_name: str, last_name: str, prospect_email: str
 ) -> None:
     name = escape(f"{first_name} {last_name}")
     prospect = escape(prospect_email)
@@ -76,7 +76,6 @@ def send_attorney_notification(
       <ul>
         <li><strong>Name:</strong> {name}</li>
         <li><strong>Email:</strong> {prospect}</li>
-        <li><strong>Lead ID:</strong> {escape(lead_id)}</li>
       </ul>
       <p>Open the internal dashboard to review the resume and mark the lead as
          reached out.</p>
@@ -90,7 +89,7 @@ def send_attorney_notification(
 
 
 def send_lead_emails(
-    *, first_name: str, last_name: str, email: str, lead_id: str
+    *, first_name: str, last_name: str, email: str
 ) -> None:
     """Fire both transactional emails. Intended to run as a BackgroundTask."""
     send_prospect_confirmation(to=email, first_name=first_name)
@@ -98,5 +97,4 @@ def send_lead_emails(
         first_name=first_name,
         last_name=last_name,
         prospect_email=email,
-        lead_id=lead_id,
     )
