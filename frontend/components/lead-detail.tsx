@@ -141,31 +141,22 @@ export function LeadDetail({ lead }: { lead: Lead }) {
             </Card>
           )}
 
-          {/* Resume document */}
-          <Card title="Resume">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-stone-100 text-lg">
-                  📄
-                </span>
-                <span className="text-sm font-medium text-stone-700">
-                  {lead.resume_filename}
-                </span>
-              </div>
-              <a
-                href={`/dashboard/leads/${lead.id}/resume`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
-              >
-                Open résumé ↗
-              </a>
-            </div>
-          </Card>
         </div>
 
         {/* Activity + action */}
-        <Card title="Activity" className="self-start">
+        <Card className="self-start">
+          <a
+            href={`/dashboard/leads/${lead.id}/resume`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
+          >
+            📄 Open résumé ↗
+          </a>
+
+          <h2 className="mb-4 mt-6 text-sm font-semibold text-stone-900">
+            Activity
+          </h2>
           <ol className="space-y-4">
             <li className="flex gap-3">
               <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-green-500" />
