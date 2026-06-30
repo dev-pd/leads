@@ -2,57 +2,54 @@ import Link from "next/link";
 
 import { type Lead } from "@/lib/api";
 import { LeadStateBadge } from "@/components/lead-state-badge";
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
+import { formatRelative, initials } from "@/lib/format";
 
 export function LeadsTable({ leads }: { leads: Lead[] }) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white shadow-sm">
-      <table className="w-full border-collapse text-left text-sm">
+    <div className="overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm">
+      <table className="w-full text-left text-sm">
         <thead>
           <tr className="border-b border-stone-200 bg-stone-50/60 text-xs font-medium uppercase tracking-wide text-stone-500">
-            <th className="px-4 py-3">Name</th>
-            <th className="px-4 py-3">Email</th>
-            <th className="px-4 py-3">Status</th>
-            <th className="px-4 py-3">Submitted</th>
-            <th className="px-4 py-3 text-right">
-              <span className="sr-only">Actions</span>
-            </th>
+            <th className="px-5 py-3 font-medium">Prospect</th>
+            <th className="px-5 py-3 font-medium">Status</th>
+            <th className="px-5 py-3 font-medium">Submitted</th>
+            <th className="px-5 py-3" />
           </tr>
         </thead>
         <tbody>
           {leads.map((lead) => (
             <tr
               key={lead.id}
-              className="border-b border-stone-100 transition last:border-0 hover:bg-indigo-50/40"
+              className="group border-b border-stone-100 transition last:border-0 hover:bg-indigo-50/40"
             >
-              <td className="px-4 py-3 font-medium text-stone-900">
+              <td className="px-5 py-3">
                 <Link
                   href={`/dashboard/leads/${lead.id}`}
-                  className="block focus:outline-none"
+                  className="flex items-center gap-3"
                 >
-                  {lead.first_name} {lead.last_name}
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700">
+                    {initials(lead.first_name, lead.last_name)}
+                  </span>
+                  <span className="flex flex-col">
+                    <span className="font-medium text-stone-900">
+                      {lead.first_name} {lead.last_name}
+                    </span>
+                    <span className="text-xs text-stone-500">{lead.email}</span>
+                  </span>
                 </Link>
               </td>
-              <td className="px-4 py-3 text-stone-600">{lead.email}</td>
-              <td className="px-4 py-3">
+              <td className="px-5 py-3">
                 <LeadStateBadge state={lead.state} />
               </td>
-              <td className="px-4 py-3 text-stone-600">
-                {formatDate(lead.created_at)}
+              <td className="px-5 py-3 text-stone-500">
+                {formatRelative(lead.created_at)}
               </td>
-              <td className="px-4 py-3 text-right">
+              <td className="px-5 py-3 text-right">
                 <Link
                   href={`/dashboard/leads/${lead.id}`}
-                  className="text-sm font-semibold text-indigo-600 underline-offset-2 hover:underline"
+                  className="text-sm font-semibold text-indigo-600 opacity-0 transition group-hover:opacity-100"
                 >
-                  View
+                  View →
                 </Link>
               </td>
             </tr>
