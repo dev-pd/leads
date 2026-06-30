@@ -99,7 +99,10 @@ export function LeadDetail({ lead }: { lead: Lead }) {
         <div className="flex flex-col gap-6 lg:col-span-2">
           {/* AI fit assessment */}
           {lead.profile_score !== null && (
-            <Card title="AI fit assessment">
+            <Card title="AI O-1 candidacy assessment">
+              <p className="-mt-2 mb-4 text-xs text-stone-500">
+                Scored against the O-1 extraordinary-ability criteria.
+              </p>
               {lead.resume_summary && (
                 <p className="mb-5 text-sm leading-relaxed text-stone-700">
                   {lead.resume_summary}
