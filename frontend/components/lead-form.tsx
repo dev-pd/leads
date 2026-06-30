@@ -4,7 +4,9 @@ import { useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { toast } from "sonner";
 import { apiBaseUrl, ApiError, type Lead } from "@/lib/api";
+import { Spinner } from "@/components/spinner";
 
 const MAX_RESUME_BYTES = 10 * 1024 * 1024;
 const PDF_TYPE = "application/pdf";
@@ -30,15 +32,8 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-interface Submitted {
-  first_name: string;
-  last_name: string;
-  email: string;
-}
-
 export function LeadForm() {
   const [formError, setFormError] = useState<string | null>(null);
-  const [submitted, setSubmitted] = useState<Submitted | null>(null);
 
   const {
     register,
@@ -68,40 +63,17 @@ export function LeadForm() {
         throw new ApiError("HTTP_ERROR", message, res.status);
       }
       const lead = (await res.json()) as Lead;
-      setSubmitted({
-        first_name: lead.first_name,
-        last_name: lead.last_name,
-        email: lead.email,
+      toast.success("Application submitted", {
+        description: `Thanks ${lead.first_name} — we'll be in touch at ${lead.email}.`,
       });
+      reset();
     } catch (err) {
-      setFormError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      const message =
+        err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      setFormError(message);
+      toast.error(message);
     }
   });
-
-  function submitAnother() {
-    reset();
-    setSubmitted(null);
-    setFormError(null);
-  }
-
-  if (submitted) {
-    return (
-      <div className="rounded-lg border border-stone-200 bg-white p-8 shadow-sm">
-        <h2 className="text-xl font-semibold text-stone-900">Application received</h2>
-        <p className="mt-2 text-stone-600">
-          Thanks, {submitted.first_name} {submitted.last_name} — we&apos;ll be in touch at{" "}
-          <span className="font-medium text-stone-900">{submitted.email}</span>.
-        </p>
-        <button
-          type="button"
-          onClick={submitAnother}
-          className="mt-6 rounded-md border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 transition hover:bg-stone-50"
-        >
-          Submit another
-        </button>
-      </div>
-    );
-  }
 
   return (
     <form
@@ -178,8 +150,9 @@ export function LeadForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="mt-1 rounded-md bg-stone-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-1 inline-flex items-center justify-center gap-2 rounded-md bg-stone-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:opacity-60"
         >
+          {isSubmitting && <Spinner />}
           {isSubmitting ? "Submitting…" : "Submit application"}
         </button>
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { toast } from "sonner";
 
 import {
   LEAD_STATES,
@@ -8,6 +9,7 @@ import {
   type LeadState,
 } from "@/lib/api";
 import { updateLeadState } from "@/app/dashboard/actions";
+import { Spinner } from "@/components/spinner";
 
 interface StatusControlProps {
   leadId: string;
@@ -16,21 +18,17 @@ interface StatusControlProps {
 
 export function StatusControl({ leadId, state }: StatusControlProps) {
   const [selected, setSelected] = useState<LeadState>(state);
-  const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
   const terminal = state === "REACHED_OUT";
 
   function onUpdate() {
-    setMessage(null);
-    setError(null);
     startTransition(async () => {
       const result = await updateLeadState(leadId, selected);
       if (result.error) {
-        setError(result.error);
+        toast.error(result.error);
       } else {
-        setMessage("Updated");
+        toast.success(`Status updated to ${LEAD_STATE_LABELS[selected]}`);
       }
     });
   }
@@ -59,11 +57,7 @@ export function StatusControl({ leadId, state }: StatusControlProps) {
           id="lead-status"
           value={selected}
           disabled={pending}
-          onChange={(e) => {
-            setSelected(e.target.value as LeadState);
-            setMessage(null);
-            setError(null);
-          }}
+          onChange={(e) => setSelected(e.target.value as LeadState)}
           className="rounded-md border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 shadow-sm outline-none transition focus:border-stone-400 focus:ring-2 focus:ring-stone-100 disabled:opacity-60"
         >
           {LEAD_STATES.map((s) => (
@@ -76,19 +70,12 @@ export function StatusControl({ leadId, state }: StatusControlProps) {
           type="button"
           onClick={onUpdate}
           disabled={pending || selected === state}
-          className="rounded-md bg-stone-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex items-center gap-2 rounded-md bg-stone-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:opacity-60"
         >
+          {pending && <Spinner />}
           {pending ? "Updating…" : "Update status"}
         </button>
-        {message && (
-          <span className="text-sm font-medium text-green-700">{message}</span>
-        )}
       </div>
-      {error && (
-        <p role="alert" className="text-sm text-red-600">
-          {error}
-        </p>
-      )}
     </div>
   );
 }
