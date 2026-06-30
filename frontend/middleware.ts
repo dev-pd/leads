@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-// Cookie name is inlined: middleware runs on the edge runtime and must avoid
-// importing Node-only modules (next/headers). Presence-only check — the backend
-// is the source of truth and re-validates the JWT on every request.
+// Inlined (not imported from lib/session) because the edge runtime can't load
+// next/headers. Presence-only check; the backend re-validates the JWT.
 const AUTH_COOKIE = "auth_token";
 
 export function middleware(req: NextRequest) {

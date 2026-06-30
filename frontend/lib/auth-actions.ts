@@ -12,10 +12,7 @@ export interface LoginState {
 
 const TOKEN_MAX_AGE = 60 * 60 * 24; // 24h, matches backend JWT expiry
 
-/**
- * Server action used by the login modal. Returns a result (does NOT redirect) so
- * the client can show a toast and navigate itself.
- */
+// Returns a result instead of redirecting so the client can toast and navigate.
 export async function loginAction(
   _prev: LoginState,
   formData: FormData,
@@ -45,7 +42,6 @@ export async function loginAction(
   return { ok: true };
 }
 
-/** Clear the session and return to the public landing page. */
 export async function logoutAction(): Promise<void> {
   await clearToken();
   redirect("/");

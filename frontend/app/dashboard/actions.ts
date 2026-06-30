@@ -10,7 +10,6 @@ export interface UpdateResult {
   error?: string;
 }
 
-/** Transition a lead's state (PENDING -> REACHED_OUT). */
 export async function updateLeadState(
   id: string,
   state: LeadState,

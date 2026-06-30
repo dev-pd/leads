@@ -15,11 +15,9 @@ const schema = z.object({
   first_name: z.string().trim().min(1, "First name is required"),
   last_name: z.string().trim().min(1, "Last name is required"),
   email: z.string().trim().min(1, "Email is required").email("Enter a valid email"),
-  // NOTE: `FileList` is browser-only. This is a client component but Next.js
-  // still evaluates the module during SSR, where `FileList` is undefined.
-  // `z.custom<FileList>()` keeps the static type (so the field error stays a
-  // string) while referencing `FileList` only inside refine callbacks, which
-  // run on submit (client-side) — avoiding a server-side ReferenceError.
+  // `FileList` is browser-only but this module is still evaluated during SSR.
+  // `z.custom` keeps the type while touching `FileList` only inside refine
+  // callbacks (client-side, on submit), avoiding a server-side ReferenceError.
   resume: z
     .custom<FileList>()
     .refine((files) => files instanceof FileList && files.length > 0, "A resume is required")

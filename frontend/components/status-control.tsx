@@ -58,7 +58,7 @@ export function StatusControl({ leadId, state }: StatusControlProps) {
           value={selected}
           disabled={pending}
           onChange={(e) => setSelected(e.target.value as LeadState)}
-          className="rounded-md border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 shadow-sm outline-none transition focus:border-stone-400 focus:ring-2 focus:ring-stone-100 disabled:opacity-60"
+          className="rounded-md border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 shadow-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 disabled:opacity-60"
         >
           {LEAD_STATES.map((s) => (
             <option key={s} value={s}>

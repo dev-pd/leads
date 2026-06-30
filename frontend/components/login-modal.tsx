@@ -17,7 +17,6 @@ export function LoginModal({ open, onClose }: LoginModalProps) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  // Close on Escape.
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();

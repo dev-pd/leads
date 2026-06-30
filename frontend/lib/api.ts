@@ -10,8 +10,7 @@
 
 export type LeadState = "PENDING" | "REACHED_OUT";
 
-/** All lead states, for the attorney's status dropdown. Mirrors the backend
- *  LeadState enum (the OpenAPI schema is the cross-stack source of truth). */
+/** Mirrors the backend LeadState enum (OpenAPI schema is the source of truth). */
 export const LEAD_STATES: LeadState[] = ["PENDING", "REACHED_OUT"];
 
 export const LEAD_STATE_LABELS: Record<LeadState, string> = {
