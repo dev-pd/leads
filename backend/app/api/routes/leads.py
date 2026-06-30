@@ -9,16 +9,19 @@ Attorney-only (Bearer JWT):
   PATCH  /api/leads/{id}            transition state (PENDING -> REACHED_OUT)
   GET    /api/leads/{id}/resume     stream the stored resume
 """
-from fastapi import APIRouter, BackgroundTasks, File, Form, Response, UploadFile
+from typing import Literal
+
+from fastapi import APIRouter, BackgroundTasks, File, Form, Query, Response, UploadFile
 from pydantic import EmailStr
 from starlette.concurrency import run_in_threadpool
 
 from app.api.deps import CurrentAttorney, LeadRepo, Storage
 from app.config import settings
 from app.core.errors import bad_request
-from app.schemas.lead import LeadList, LeadOut, LeadStateUpdate
+from app.schemas.lead import LeadList, LeadOut, LeadStateUpdate, LeadStats
 from app.services import leads as lead_service
 from app.services.email import send_lead_emails
+from app.services.resume_ai import generate_and_store_summary
 
 router = APIRouter(prefix="/leads", tags=["leads"])
 
@@ -73,13 +76,34 @@ async def create_lead(
         last_name=lead.last_name,
         email=lead.email,
     )
+    # Generate the AI resume profile out of band (Anthropic API call).
+    background.add_task(
+        generate_and_store_summary,
+        lead.id,
+        data,
+        resume.content_type or "application/pdf",
+    )
     return LeadOut.model_validate(lead)
 
 
 @router.get("", response_model=LeadList)
-def list_leads(leads: LeadRepo, _: CurrentAttorney) -> LeadList:
-    items, total = lead_service.list_leads(leads)
+def list_leads(
+    leads: LeadRepo,
+    _: CurrentAttorney,
+    limit: int = Query(default=24, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    rating: Literal["strong", "moderate", "weak"] | None = Query(default=None),
+    sort: Literal["recent", "score"] = Query(default="recent"),
+) -> LeadList:
+    items, total = lead_service.list_leads(
+        leads, limit=limit, offset=offset, rating=rating, sort=sort
+    )
     return LeadList(items=[LeadOut.model_validate(i) for i in items], total=total)
+
+
+@router.get("/stats", response_model=LeadStats)
+def lead_stats(leads: LeadRepo, _: CurrentAttorney) -> LeadStats:
+    return LeadStats(**lead_service.get_stats(leads))
 
 
 @router.get("/{lead_id}", response_model=LeadOut)

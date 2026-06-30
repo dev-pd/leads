@@ -37,6 +37,11 @@ class Settings(BaseSettings):
     email_from: str = "onboarding@resend.dev"
     notify_attorney_email: str = "attorney@example.com"
 
+    # --- AI resume summary (Anthropic API) ---
+    anthropic_api_key: str = ""  # empty -> summary generation is skipped
+    # Sonnet is the cost-effective default for summarization; override per env.
+    claude_model: str = "claude-sonnet-5"
+
     # --- Storage ---
     storage_backend: Literal["local", "s3"] = "local"
     local_storage_dir: str = "/data/resumes"

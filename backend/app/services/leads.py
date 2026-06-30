@@ -3,6 +3,8 @@
 Holds the domain rules (uniqueness, valid state transitions, storage
 orchestration) and delegates all persistence to the LeadRepository.
 """
+from datetime import UTC, datetime
+
 from app.core.errors import bad_request, conflict, not_found
 from app.core.logging_config import get_logger
 from app.models.lead import Lead, LeadState
@@ -55,8 +57,27 @@ def create_lead(
     return lead
 
 
-def list_leads(leads: LeadRepository) -> tuple[list[Lead], int]:
-    return leads.list(), leads.count()
+def list_leads(
+    leads: LeadRepository,
+    *,
+    limit: int | None = None,
+    offset: int = 0,
+    rating: str | None = None,
+    sort: str = "recent",
+) -> tuple[list[Lead], int]:
+    items = leads.list(limit=limit, offset=offset, rating=rating, sort=sort)
+    return items, leads.count(rating=rating)
+
+
+def get_stats(leads: LeadRepository) -> dict[str, int]:
+    counts = leads.state_counts()
+    pending = counts.get(LeadState.PENDING.value, 0)
+    reached_out = counts.get(LeadState.REACHED_OUT.value, 0)
+    return {
+        "total": pending + reached_out,
+        "pending": pending,
+        "reached_out": reached_out,
+    }
 
 
 def get_lead(leads: LeadRepository, lead_id: str) -> Lead:
@@ -78,6 +99,8 @@ def update_lead_state(
             f"Cannot move lead from {lead.state.value} to {new_state.value}",
         )
     lead.state = new_state
+    if new_state == LeadState.REACHED_OUT:
+        lead.reached_out_at = datetime.now(UTC)
     leads.commit(lead)
     _log.info("lead_state_changed", extra={"lead_id": lead.id, "state": new_state.value})
     return lead

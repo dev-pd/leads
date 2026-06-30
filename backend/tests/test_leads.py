@@ -96,7 +96,9 @@ def test_state_transition_pending_to_reached_out(client, pdf_bytes, auth_headers
         headers=auth_headers,
     )
     assert res.status_code == 200
-    assert res.json()["state"] == "REACHED_OUT"
+    body = res.json()
+    assert body["state"] == "REACHED_OUT"
+    assert body["reached_out_at"] is not None  # timestamp recorded for the trail
 
 
 def test_invalid_state_transition_rejected(client, pdf_bytes, auth_headers):
