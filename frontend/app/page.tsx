@@ -15,7 +15,7 @@ export default async function Home({
         attorneyName={user?.name ?? null}
         openLoginInitially={sp.auth === "required"}
       />
-      <main className="mx-auto grid max-w-6xl items-start gap-12 px-4 py-12 sm:px-6 md:grid-cols-2 md:py-20">
+      <main className="mx-auto grid max-w-7xl items-start gap-12 px-4 py-12 sm:px-6 md:grid-cols-2 md:py-20">
         <section className="flex flex-col justify-center">
           <span className="inline-flex w-fit items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700">
             <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
