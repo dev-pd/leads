@@ -1,9 +1,4 @@
-"""Storage backend interface.
-
-A single abstraction over resume-file persistence. The concrete backend is
-chosen by config (``local`` for zero-infra dev, ``s3`` for MinIO/S3) so the
-rest of the app never imports boto3 or touches the filesystem directly.
-"""
+"""Storage backend interface over resume-file persistence."""
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 

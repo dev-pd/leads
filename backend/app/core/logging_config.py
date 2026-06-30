@@ -1,9 +1,4 @@
-"""Structured JSON logging with per-request correlation IDs.
-
-Mirrors the reference repo's Pino + X-Request-Id pattern. Every log line is a
-single JSON object so it ships cleanly to any log aggregator; each line carries
-the request id bound for the current request via a contextvar.
-"""
+"""Structured JSON logging with per-request correlation IDs."""
 import json
 import logging
 import sys

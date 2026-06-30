@@ -1,10 +1,5 @@
-"""Password hashing and JWT issuance/verification.
-
-Self-contained auth primitives. Kept behind a thin module so the whole scheme
-can be swapped for a hosted provider (e.g. Clerk) without touching routes —
-only ``api/deps.require_attorney`` and these helpers would change.
-"""
-from datetime import datetime, timedelta, timezone
+"""Password hashing and JWT issuance/verification."""
+from datetime import UTC, datetime, timedelta
 
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -24,7 +19,7 @@ def verify_password(plain: str, hashed: str) -> bool:
 
 
 def create_access_token(subject: str, extra: dict | None = None) -> str:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     payload = {
         "sub": subject,
         "iat": now,

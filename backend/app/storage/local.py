@@ -1,8 +1,7 @@
-"""Local-disk storage backend — the zero-infra default for dev/demo.
+"""Local-disk storage backend (zero-infra default for dev/demo).
 
-Files live under ``settings.local_storage_dir`` (a mounted Docker volume in
-compose). Content-type and original filename are persisted in a sidecar JSON so
-``get`` can faithfully reconstruct the response.
+Content-type and original filename are persisted in a sidecar JSON so ``get``
+can faithfully reconstruct the response.
 """
 import json
 from pathlib import Path

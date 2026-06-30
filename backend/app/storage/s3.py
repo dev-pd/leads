@@ -1,8 +1,6 @@
 """S3-compatible storage backend (MinIO locally, AWS S3 in prod).
 
-Identical interface to the local backend — the only code that knows about
-boto3. Swapping ``STORAGE_BACKEND=s3`` plus the S3_* env vars is all it takes
-to move from disk to object storage; no application code changes.
+The only module that imports boto3.
 """
 import boto3
 from botocore.client import Config

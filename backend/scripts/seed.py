@@ -1,7 +1,6 @@
 """Seed the single internal attorney account from environment settings.
 
-Idempotent: running it again updates the existing account's name/password
-rather than creating a duplicate. Invoke with ``python -m scripts.seed``.
+Idempotent: re-running updates the existing account rather than duplicating it.
 """
 from sqlalchemy import select
 

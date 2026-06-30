@@ -1,12 +1,12 @@
 """Auth routes: attorney login + current-user lookup."""
 from fastapi import APIRouter
+from sqlalchemy import select
 
 from app.api.deps import CurrentAttorney, DbSession
 from app.core.errors import unauthorized
 from app.core.security import create_access_token, verify_password
 from app.models.user import User
 from app.schemas.auth import CurrentUser, LoginRequest, TokenResponse
-from sqlalchemy import select
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 

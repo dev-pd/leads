@@ -1,8 +1,5 @@
-"""Centralized application errors and exception handlers.
-
-Mirrors the reference repo's `AppError` + central handler: every error leaves
-the API as a consistent ``{"error": {"code", "message"}}`` envelope.
-"""
+"""Application errors and handlers producing a consistent
+``{"error": {"code", "message"}}`` envelope."""
 from fastapi import FastAPI, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError

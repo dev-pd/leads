@@ -1,8 +1,4 @@
-"""Shared FastAPI dependencies: DB session, storage, and the auth guard.
-
-``require_attorney`` is the single chokepoint protecting every internal route.
-To migrate to a hosted auth provider later, only this function changes.
-"""
+"""Shared FastAPI dependencies: DB session, storage, and the auth guard."""
 from typing import Annotated
 
 from fastapi import Depends

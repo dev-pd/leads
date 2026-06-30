@@ -1,16 +1,5 @@
-"""Email delivery via Resend.
-
-Two transactional emails fire when a lead is submitted:
-  1. prospect confirmation  ("we received your application")
-  2. attorney notification   ("a new lead came in")
-
-Design notes:
-  * Sends are best-effort and never block or fail the lead submission — they run
-    in a FastAPI BackgroundTask and swallow/log their own errors.
-  * If ``RESEND_API_KEY`` is unset the payload is logged instead of sent, so the
-    app is fully runnable without credentials. With the key set, mail is real.
-  * Templates are small inline HTML with explicit escaping of user input.
-"""
+"""Transactional email delivery via Resend (prospect confirmation + attorney
+notification). Sends are best-effort and never block or fail lead submission."""
 from html import escape
 
 import resend
@@ -22,7 +11,6 @@ _log = get_logger("app.email")
 
 
 def _send(to: str, subject: str, html: str) -> None:
-    """Low-level send. Logs on every path; raises nothing to callers' detriment."""
     if not settings.resend_api_key:
         _log.warning(
             "email_skipped_no_api_key",

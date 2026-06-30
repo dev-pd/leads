@@ -1,8 +1,4 @@
-"""Lead business logic: creation (store + persist), listing, state transitions.
-
-Routes stay thin — all domain rules (valid state transitions, file storage
-orchestration) live here.
-"""
+"""Lead business logic: creation, listing, and state transitions."""
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
@@ -13,7 +9,7 @@ from app.storage import StorageBackend, StoredObject
 
 _log = get_logger("app.leads")
 
-# Allowed state transitions. Single source of truth for the workflow.
+# Single source of truth for the PENDING -> REACHED_OUT workflow.
 _TRANSITIONS: dict[LeadState, set[LeadState]] = {
     LeadState.PENDING: {LeadState.REACHED_OUT},
     LeadState.REACHED_OUT: set(),
