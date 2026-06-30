@@ -1,0 +1,83 @@
+# Local development stack: Postgres + MinIO + FastAPI backend + Next.js frontend.
+# `docker compose up` brings the whole app online with no extra setup.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: leads
+      POSTGRES_PASSWORD: leads
+      POSTGRES_DB: leads
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U leads"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000" # S3 API
+      - "9001:9001" # web console
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build: ./backend
+    env_file: ./backend/.env
+    environment:
+      # Override host-based defaults with in-network service names.
+      DATABASE_URL: postgresql+psycopg://leads:leads@db:5432/leads
+      S3_ENDPOINT_URL: http://minio:9000
+      # Behind nginx the browser is same-origin, so CORS is not needed; this
+      # value only matters for direct-to-backend dev calls.
+      CORS_ORIGINS: http://localhost,http://localhost:3000
+    expose:
+      - "8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    volumes:
+      - resume_data:/data/resumes
+
+  frontend:
+    build: ./frontend
+    env_file: ./frontend/.env.local
+    environment:
+      # Browser calls are same-origin via nginx (/api). Server components call
+      # the backend container directly.
+      NEXT_PUBLIC_API_BASE_URL: /api
+      BACKEND_INTERNAL_URL: http://backend:8000
+    expose:
+      - "3000"
+    depends_on:
+      - backend
+
+  nginx:
+    image: nginx:1.27-alpine
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  db_data:
+  minio_data:
+  resume_data:
