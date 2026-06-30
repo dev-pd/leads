@@ -34,6 +34,8 @@ lives in `services/`. Errors raised as `AppError` (`core/errors.py`) → consist
 - Migrations, not `create_all`. New model change → new Alembic revision.
 
 ## Commands
-- Run: `uvicorn app.main:app --reload`
-- Migrate: `alembic upgrade head`  · Seed: `python -m scripts.seed`
-- Test: `pytest`
+Dependencies are managed with **uv** (`pyproject.toml` + `uv.lock`). `uv sync`
+installs them; `uv run <cmd>` runs inside the project venv.
+- Run: `uv run uvicorn app.main:app --reload`
+- Migrate: `uv run alembic upgrade head`  · Seed: `uv run python -m scripts.seed`
+- Test: `uv run pytest`  · Lint: `uv run ruff check app scripts tests`

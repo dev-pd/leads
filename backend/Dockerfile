@@ -1,15 +1,19 @@
 # syntax=docker/dockerfile:1
-FROM python:3.12-slim AS base
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PIP_NO_CACHE_DIR=1
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_PROJECT_ENVIRONMENT=/app/.venv \
+    PATH="/app/.venv/bin:$PATH"
 
 WORKDIR /app
 
-# Install dependencies first for better layer caching.
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Install dependencies first, from the lockfile, for reproducible + cached builds.
+# (dev group included so `make test` / `make lint` work inside the container.)
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen
 
 COPY . .
 
