@@ -112,8 +112,9 @@ rubric (`app/prompts/resume.py`, versioned). Where it goes next:
   models. Capture the model + prompt version on each assessment for auditability.
 - **Cost/latency controls:** batch off-peak analysis, cache by resume hash, and
   tier models (cheap default — currently Sonnet — escalating only on ambiguity).
-- **Guardrails:** PII minimization in prompts, output validation (already
-  defensive JSON parsing + rubric clamping), and bias review of scoring.
+- **Guardrails:** PII minimization in prompts, output validation (already a
+  schema-validated forced tool call + rubric clamping), and bias review of
+  scoring.
 
 ---
 

@@ -1,13 +1,15 @@
 # Leads
 
-A publicly-fillable lead intake application with an auth-guarded internal
-dashboard for attorneys, plus **AI résumé scoring** that triages prospects.
+A publicly-fillable lead intake application for an immigration firm, with an
+auth-guarded internal dashboard for attorneys, plus **AI résumé scoring** that
+triages prospects as **O-1 (extraordinary-ability) visa candidates**.
 
 - **Prospects** submit a public form: first name, last name, email, résumé (PDF).
 - On submit, the app stores the résumé and emails **both** the prospect (a
   confirmation) and an **attorney** (a notification).
 - A background job **parses the résumé and scores the prospect** against a
-  weighted rubric (Anthropic API), so the attorney sees the strongest leads.
+  weighted rubric drawn from the **O-1 / EB-1A criteria** (Anthropic API,
+  structured via a forced tool call), so the attorney sees the strongest leads.
 - **Attorneys** log into an internal dashboard — a sortable, filterable table of
   leads with fit scores — review each one, download the résumé, and mark a lead
   **PENDING → REACHED_OUT**.
