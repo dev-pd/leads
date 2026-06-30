@@ -18,17 +18,16 @@ def test_login_wrong_password(client, attorney):
         json={"email": "attorney@example.com", "password": "nope"},
     )
     assert res.status_code == 401
-    assert res.json()["error"]["code"] == "INVALID_CREDENTIALS"
+    assert res.json()["error"]["code"] == "INVALID_PASSWORD"
 
 
-def test_login_unknown_email_same_error(client):
-    # No user enumeration: unknown email returns the same 401 code.
+def test_login_unknown_email(client):
     res = client.post(
         "/api/auth/login",
         json={"email": "ghost@example.com", "password": "whatever"},
     )
     assert res.status_code == 401
-    assert res.json()["error"]["code"] == "INVALID_CREDENTIALS"
+    assert res.json()["error"]["code"] == "USER_NOT_FOUND"
 
 
 def test_me_requires_token(client):

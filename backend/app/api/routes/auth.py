@@ -14,9 +14,13 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 @router.post("/login", response_model=TokenResponse)
 def login(body: LoginRequest, db: DbSession) -> TokenResponse:
     user = db.scalar(select(User).where(User.email == body.email))
-    # Constant-ish response: same error whether email or password is wrong.
-    if user is None or not verify_password(body.password, user.password_hash):
-        raise unauthorized("INVALID_CREDENTIALS", "Invalid email or password")
+    # Product choice: distinct messages for unknown-email vs wrong-password so the
+    # attorney gets clear feedback. This permits email enumeration, which is an
+    # acceptable tradeoff for a single-account internal tool.
+    if user is None:
+        raise unauthorized("USER_NOT_FOUND", "No account found for this email")
+    if not verify_password(body.password, user.password_hash):
+        raise unauthorized("INVALID_PASSWORD", "Incorrect password")
     token = create_access_token(subject=user.id, extra={"email": user.email})
     return TokenResponse(access_token=token)
 
