@@ -13,10 +13,10 @@ function formatDate(iso: string): string {
 
 export function LeadsTable({ leads }: { leads: Lead[] }) {
   return (
-    <div className="overflow-x-auto rounded-lg border border-stone-200 bg-white shadow-sm">
+    <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white shadow-sm">
       <table className="w-full border-collapse text-left text-sm">
         <thead>
-          <tr className="border-b border-stone-200 text-xs font-medium uppercase tracking-wide text-stone-500">
+          <tr className="border-b border-stone-200 bg-stone-50/60 text-xs font-medium uppercase tracking-wide text-stone-500">
             <th className="px-4 py-3">Name</th>
             <th className="px-4 py-3">Email</th>
             <th className="px-4 py-3">Status</th>
@@ -30,7 +30,7 @@ export function LeadsTable({ leads }: { leads: Lead[] }) {
           {leads.map((lead) => (
             <tr
               key={lead.id}
-              className="border-b border-stone-100 last:border-0 transition hover:bg-stone-50"
+              className="border-b border-stone-100 transition last:border-0 hover:bg-indigo-50/40"
             >
               <td className="px-4 py-3 font-medium text-stone-900">
                 <Link
@@ -50,7 +50,7 @@ export function LeadsTable({ leads }: { leads: Lead[] }) {
               <td className="px-4 py-3 text-right">
                 <Link
                   href={`/dashboard/leads/${lead.id}`}
-                  className="text-sm font-medium text-stone-700 underline-offset-2 hover:underline"
+                  className="text-sm font-semibold text-indigo-600 underline-offset-2 hover:underline"
                 >
                   View
                 </Link>

@@ -79,8 +79,16 @@ export function LeadForm() {
     <form
       onSubmit={onSubmit}
       noValidate
-      className="rounded-lg border border-stone-200 bg-white p-8 shadow-sm"
+      className="rounded-2xl border border-stone-200 bg-white p-6 shadow-lg shadow-stone-200/50 sm:p-8"
     >
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold text-stone-900">
+          Start your application
+        </h2>
+        <p className="mt-1 text-sm text-stone-500">
+          It only takes a minute.
+        </p>
+      </div>
       <div className="flex flex-col gap-5">
         {formError && (
           <div
@@ -142,7 +150,7 @@ export function LeadForm() {
             accept=".pdf,application/pdf"
             aria-invalid={errors.resume ? true : undefined}
             aria-describedby={errors.resume ? "resume-error" : undefined}
-            className="block w-full text-sm text-stone-600 file:mr-4 file:rounded-md file:border-0 file:bg-stone-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-stone-700 hover:file:bg-stone-200"
+            className="block w-full text-sm text-stone-600 file:mr-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-indigo-700 hover:file:bg-indigo-100"
             {...register("resume")}
           />
         </Field>
@@ -150,7 +158,7 @@ export function LeadForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="mt-1 inline-flex items-center justify-center gap-2 rounded-md bg-stone-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-1 inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isSubmitting && <Spinner />}
           {isSubmitting ? "Submitting…" : "Submit application"}
@@ -165,7 +173,7 @@ function inputClass(hasError: boolean): string {
     "block w-full rounded-md border bg-white px-3 py-2 text-sm text-stone-900 shadow-sm outline-none transition placeholder:text-stone-400 focus:ring-2",
     hasError
       ? "border-red-300 focus:border-red-400 focus:ring-red-100"
-      : "border-stone-300 focus:border-stone-400 focus:ring-stone-100",
+      : "border-stone-300 focus:border-indigo-400 focus:ring-indigo-100",
   ].join(" ");
 }
 

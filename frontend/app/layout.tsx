@@ -6,8 +6,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "Leads",
-  description: "Prospect intake and internal lead management",
+  title: "Meridian Law — Case Intake",
+  description: "Submit your case for review by our attorneys.",
 };
 
 export default function RootLayout({

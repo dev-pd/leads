@@ -26,7 +26,7 @@ export function LeadDetail({ lead }: { lead: Lead }) {
         </Link>
       </div>
 
-      <div className="rounded-lg border border-stone-200 bg-white p-8 shadow-sm">
+      <div className="rounded-xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8">
         <div className="flex items-start justify-between gap-4">
           <div className="flex flex-col gap-1">
             <h2 className="text-2xl font-semibold text-stone-900">
@@ -56,9 +56,9 @@ export function LeadDetail({ lead }: { lead: Lead }) {
                 href={`/dashboard/leads/${lead.id}/resume`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium text-stone-900 underline underline-offset-2 hover:text-stone-700"
+                className="inline-flex items-center gap-1.5 font-medium text-indigo-600 underline underline-offset-2 hover:text-indigo-700"
               >
-                {lead.resume_filename}
+                ↓ {lead.resume_filename}
               </a>
             </dd>
           </div>
