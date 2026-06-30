@@ -36,9 +36,3 @@ docker compose up --build
 ```
 
 Then open **http://localhost**. API docs at **http://localhost/docs**.
-
-Full instructions and the design rationale:
-- [`docs/RUNNING.md`](docs/RUNNING.md) — run it locally
-- [`docs/SYSTEM_DESIGN.md`](docs/SYSTEM_DESIGN.md) — why it's built this way
-- [`docs/AGENT_USAGE.md`](docs/AGENT_USAGE.md) — how coding agents were used
-- [`NOTES.md`](NOTES.md) — agent vs hand-written attribution

@@ -14,13 +14,12 @@ attorney → attorney reviews leads, flips state **PENDING → REACHED_OUT**.
 
 ## Run
 `cp backend/.env.example backend/.env` (set `RESEND_API_KEY`, attorney emails) →
-`docker compose up --build` → app at http://localhost. See `docs/RUNNING.md`.
+`docker compose up --build` → app at http://localhost.
 
 ## Rules
 - **Scoped commits.** One logical change per commit, conventional style
-  (`feat(backend): ...`, `feat(frontend): ...`, `docs: ...`).
+  (`feat(backend): ...`, `feat(frontend): ...`).
 - **No secrets in git.** Edit `.env.example`; never the gitignored `.env`.
-- **Attribution** in `NOTES.md` (agent-generated vs hand-written).
 - Work inside one app at a time; read that app's `AGENTS.md` first.
 
 ## Boundaries
