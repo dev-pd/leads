@@ -1,8 +1,4 @@
-"""Application configuration loaded from environment variables.
-
-Mirrors the Zod-validated `env.ts` pattern from the reference repo: a single
-typed settings object, validated once at import, injected everywhere else.
-"""
+"""Application configuration loaded from environment variables."""
 from functools import lru_cache
 from typing import Literal
 
@@ -16,7 +12,9 @@ class Settings(BaseSettings):
 
     # --- Core ---
     app_name: str = "Leads API"
+    app_version: str = "1.0.0"
     environment: Literal["development", "production", "test"] = "development"
+    log_level: str = "INFO"
     api_prefix: str = "/api"
     # Comma-separated list of allowed CORS origins (the Next.js app).
     cors_origins: str = "http://localhost:3000"
@@ -37,7 +35,6 @@ class Settings(BaseSettings):
     # --- Email (Resend) ---
     resend_api_key: str = ""  # empty -> send is skipped, payload logged only
     email_from: str = "onboarding@resend.dev"
-    # Where the internal attorney notification is delivered.
     notify_attorney_email: str = "attorney@example.com"
 
     # --- Storage ---

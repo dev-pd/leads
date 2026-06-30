@@ -11,6 +11,7 @@ Attorney-only (Bearer JWT):
 """
 from fastapi import APIRouter, BackgroundTasks, File, Form, Response, UploadFile
 from pydantic import EmailStr
+from starlette.concurrency import run_in_threadpool
 
 from app.api.deps import CurrentAttorney, DbSession, Storage
 from app.config import settings
@@ -51,7 +52,10 @@ async def create_lead(
     data = await resume.read()
     _validate_resume(resume, data)
 
-    lead = lead_service.create_lead(
+    # Offload the synchronous DB + storage work to a threadpool so it never
+    # blocks the event loop.
+    lead = await run_in_threadpool(
+        lead_service.create_lead,
         db,
         storage,
         first_name=first_name.strip(),
@@ -92,7 +96,9 @@ def update_lead(
 
 
 @router.get("/{lead_id}/resume")
-def download_resume(lead_id: str, db: DbSession, storage: Storage, _: CurrentAttorney):
+def download_resume(
+    lead_id: str, db: DbSession, storage: Storage, _: CurrentAttorney
+) -> Response:
     obj = lead_service.get_resume(db, storage, lead_id)
     return Response(
         content=obj.data,

@@ -1,8 +1,4 @@
-"""FastAPI application factory.
-
-Wires config -> logging -> middleware -> error handlers -> routers. Importing
-``app`` (or calling ``create_app``) yields a fully configured ASGI app.
-"""
+"""FastAPI application factory."""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -14,10 +10,10 @@ from app.core.middleware import RequestContextMiddleware
 
 
 def create_app() -> FastAPI:
-    configure_logging()
+    configure_logging(settings.log_level)
     app = FastAPI(
         title=settings.app_name,
-        version="1.0.0",
+        version=settings.app_version,
         docs_url="/docs",
         openapi_url="/openapi.json",
     )
@@ -27,14 +23,14 @@ def create_app() -> FastAPI:
         CORSMiddleware,
         allow_origins=settings.cors_origins_list,
         allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_methods=["GET", "POST", "PATCH", "OPTIONS"],
+        allow_headers=["Authorization", "Content-Type"],
         expose_headers=["x-request-id"],
     )
 
     register_exception_handlers(app)
 
-    # Health is unprefixed; everything else lives under /api.
+    # Health stays unprefixed so load balancers can probe it directly.
     app.include_router(health.router)
     app.include_router(auth.router, prefix=settings.api_prefix)
     app.include_router(leads.router, prefix=settings.api_prefix)
