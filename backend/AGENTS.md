@@ -9,20 +9,22 @@ app/
   models/            ORM: lead.py (Lead + LeadState enum), user.py
   schemas/           Pydantic I/O: lead.py, auth.py
   api/
-    deps.py          DbSession, Storage, require_attorney (JWT guard)
+    deps.py          DbSession, Storage, repositories, require_attorney (JWT guard)
     routes/          leads.py, auth.py, health.py
   services/          business logic: leads.py, email.py
+  repositories/      data access: leads.py, users.py (the only DB queries)
   storage/           backend interface + local.py + s3.py + factory.py
   core/              errors, security (JWT/bcrypt), logging, middleware
-alembic/             migrations (0001_initial)
+alembic/             migrations
 scripts/             seed.py (attorney), entrypoint.sh
 tests/               pytest
 ```
 
 ## Layering (keep it)
-`route → service → model/storage`. Routes parse/validate only; all domain logic
-lives in `services/`. Errors raised as `AppError` (`core/errors.py`) → consistent
-`{"error":{"code","message"}}` envelope.
+`route → service → repository → model`, with `storage/` for files. Routes
+parse/validate only; domain rules live in `services/`; **all DB queries live in
+`repositories/`** (services never touch the session directly). Errors raised as
+`AppError` (`core/errors.py`) → consistent `{"error":{"code","message"}}` envelope.
 
 ## Rules
 - Add new env vars to `config.Settings` **and** `.env.example`.

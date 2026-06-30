@@ -1,19 +1,17 @@
 """Auth routes: attorney login + current-user lookup."""
 from fastapi import APIRouter
-from sqlalchemy import select
 
-from app.api.deps import CurrentAttorney, DbSession
+from app.api.deps import CurrentAttorney, UserRepo
 from app.core.errors import unauthorized
 from app.core.security import create_access_token, verify_password
-from app.models.user import User
 from app.schemas.auth import CurrentUser, LoginRequest, TokenResponse
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/login", response_model=TokenResponse)
-def login(body: LoginRequest, db: DbSession) -> TokenResponse:
-    user = db.scalar(select(User).where(User.email == body.email))
+def login(body: LoginRequest, users: UserRepo) -> TokenResponse:
+    user = users.get_by_email(body.email)
     # Product choice: distinct messages for unknown-email vs wrong-password so the
     # attorney gets clear feedback. This permits email enumeration, which is an
     # acceptable tradeoff for a single-account internal tool.

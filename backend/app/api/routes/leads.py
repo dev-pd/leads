@@ -13,7 +13,7 @@ from fastapi import APIRouter, BackgroundTasks, File, Form, Response, UploadFile
 from pydantic import EmailStr
 from starlette.concurrency import run_in_threadpool
 
-from app.api.deps import CurrentAttorney, DbSession, Storage
+from app.api.deps import CurrentAttorney, LeadRepo, Storage
 from app.config import settings
 from app.core.errors import bad_request
 from app.schemas.lead import LeadList, LeadOut, LeadStateUpdate
@@ -40,7 +40,7 @@ def _validate_resume(file: UploadFile, data: bytes) -> None:
 
 @router.post("", response_model=LeadOut, status_code=201)
 async def create_lead(
-    db: DbSession,
+    leads: LeadRepo,
     storage: Storage,
     background: BackgroundTasks,
     first_name: str = Form(..., min_length=1, max_length=120),
@@ -56,7 +56,7 @@ async def create_lead(
     # blocks the event loop.
     lead = await run_in_threadpool(
         lead_service.create_lead,
-        db,
+        leads,
         storage,
         first_name=first_name.strip(),
         last_name=last_name.strip(),
@@ -77,29 +77,29 @@ async def create_lead(
 
 
 @router.get("", response_model=LeadList)
-def list_leads(db: DbSession, _: CurrentAttorney) -> LeadList:
-    items, total = lead_service.list_leads(db)
+def list_leads(leads: LeadRepo, _: CurrentAttorney) -> LeadList:
+    items, total = lead_service.list_leads(leads)
     return LeadList(items=[LeadOut.model_validate(i) for i in items], total=total)
 
 
 @router.get("/{lead_id}", response_model=LeadOut)
-def get_lead(lead_id: str, db: DbSession, _: CurrentAttorney) -> LeadOut:
-    return LeadOut.model_validate(lead_service.get_lead(db, lead_id))
+def get_lead(lead_id: str, leads: LeadRepo, _: CurrentAttorney) -> LeadOut:
+    return LeadOut.model_validate(lead_service.get_lead(leads, lead_id))
 
 
 @router.patch("/{lead_id}", response_model=LeadOut)
 def update_lead(
-    lead_id: str, body: LeadStateUpdate, db: DbSession, _: CurrentAttorney
+    lead_id: str, body: LeadStateUpdate, leads: LeadRepo, _: CurrentAttorney
 ) -> LeadOut:
-    lead = lead_service.update_lead_state(db, lead_id, body.state)
+    lead = lead_service.update_lead_state(leads, lead_id, body.state)
     return LeadOut.model_validate(lead)
 
 
 @router.get("/{lead_id}/resume")
 def download_resume(
-    lead_id: str, db: DbSession, storage: Storage, _: CurrentAttorney
+    lead_id: str, leads: LeadRepo, storage: Storage, _: CurrentAttorney
 ) -> Response:
-    obj = lead_service.get_resume(db, storage, lead_id)
+    obj = lead_service.get_resume(leads, storage, lead_id)
     return Response(
         content=obj.data,
         media_type=obj.content_type,
