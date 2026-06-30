@@ -6,12 +6,16 @@ import { apiBaseUrl } from "@/lib/api";
 import { clearToken, setToken } from "@/lib/session";
 
 export interface LoginState {
+  ok?: boolean;
   error?: string;
 }
 
 const TOKEN_MAX_AGE = 60 * 60 * 24; // 24h, matches backend JWT expiry
 
-/** Server action: exchange credentials for a JWT and store it httpOnly. */
+/**
+ * Server action used by the login modal. Returns a result (does NOT redirect) so
+ * the client can show a toast and navigate itself.
+ */
 export async function loginAction(
   _prev: LoginState,
   formData: FormData,
@@ -22,7 +26,6 @@ export async function loginAction(
     return { error: "Email and password are required" };
   }
 
-  let token: string;
   try {
     const res = await fetch(`${apiBaseUrl()}/auth/login`, {
       method: "POST",
@@ -34,16 +37,16 @@ export async function loginAction(
       const body = await res.json().catch(() => null);
       return { error: body?.error?.message ?? "Invalid email or password" };
     }
-    token = (await res.json()).access_token;
+    const token = (await res.json()).access_token;
+    await setToken(token, TOKEN_MAX_AGE);
   } catch {
     return { error: "Could not reach the server. Is the backend running?" };
   }
-
-  await setToken(token, TOKEN_MAX_AGE);
-  redirect("/dashboard");
+  return { ok: true };
 }
 
+/** Clear the session and return to the public landing page. */
 export async function logoutAction(): Promise<void> {
   await clearToken();
-  redirect("/login");
+  redirect("/");
 }

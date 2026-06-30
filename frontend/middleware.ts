@@ -9,9 +9,10 @@ const AUTH_COOKIE = "auth_token";
 export function middleware(req: NextRequest) {
   const token = req.cookies.get(AUTH_COOKIE)?.value;
   if (!token) {
+    // No login page — send them to the landing page and open the sign-in modal.
     const url = req.nextUrl.clone();
-    url.pathname = "/login";
-    url.searchParams.set("next", req.nextUrl.pathname);
+    url.pathname = "/";
+    url.search = "auth=required";
     return NextResponse.redirect(url);
   }
   return NextResponse.next();
