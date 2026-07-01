@@ -52,7 +52,15 @@ def create_lead(
     storage.put(key, resume_bytes, resume_content_type, resume_filename)
     lead.resume_key = key
 
-    leads.commit(lead)
+    try:
+        leads.commit(lead)
+    except Exception:
+        # The résumé is already stored but the row won't persist — delete the
+        # file so we don't leak an orphaned object no lead points at, then let
+        # the error propagate to the central handler.
+        _log.exception("lead_commit_failed", extra={"key": key, "email": email})
+        storage.delete(key)
+        raise
     _log.info("lead_created", extra={"lead_id": lead.id, "email": email})
     return lead
 

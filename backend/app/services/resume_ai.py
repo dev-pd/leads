@@ -235,5 +235,9 @@ def generate_and_store_summary(
                 }
             )
         leads.commit(lead)
+    except Exception:  # noqa: BLE001 — runs in a background task; log, don't crash
+        # This runs detached from the request, so an unhandled error here would
+        # only surface in the framework logger. Record it in our structured log.
+        _log.exception("resume_persist_failed", extra={"lead_id": lead_id})
     finally:
         db.close()
